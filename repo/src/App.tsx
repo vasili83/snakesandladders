@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
-
+  const diceSymb:string[] = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
   const ladders:[number, number][] = [[15,25], [3,16], [21,32]];
   const snakes:[number, number][] = [[2,12], [4,30], [22,35]];
 
@@ -34,12 +34,13 @@ function App() {
     const moveUp: number = ladders
       .map(arrPair => (Math.min(...arrPair) === rolledDiceSum ? Math.max(...arrPair) : 0))
       .find(n => n !== 0) || 0;
-
+    console.log("moveUp", moveUp);
     const moveDown: number = snakes
       .map(arrPair => (Math.max(...arrPair) === rolledDiceSum ? Math.min(...arrPair) : 0))
       .find(n => n !== 0) || 0;
+    console.log("moveDown", moveDown);
 
-    const newPos = (moveUp !== 0 ? moveUp : (moveDown !== 0 ? moveDown : rolledDiceSum)) + playerpos;
+    const newPos = (moveUp !== 0 ? moveUp : (moveDown !== 0 ? moveDown : rolledDiceSum + playerpos));
     return newPos;
   }
 
@@ -61,7 +62,7 @@ function App() {
       <main>
         <h2>{winlosemssg}</h2>
         <h3>Speler positie: {playerpos}</h3>
-        <p>Dobbelsteen 1: {dice1!==0 && dice1} | Dobbelsteen 2: {dice2!==0 && dice2}</p>
+        <p>Dobbelsteen: {dice1!==0 && diceSymb[dice1-1]} | Dobbelsteen: {dice2!==0 && diceSymb[dice2-1]}</p>
         <p>{diceSum}</p>
         <button onClick={throwDice}>Gooi!</button>
       </main>
