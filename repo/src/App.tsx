@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
@@ -12,38 +12,41 @@ function App() {
   let [playerpos, setPlayerpos] = useState<number>(1);
   let [winlosemssg, setWinlosemssg] = useState<string>("");
 
-  const throwDice = ()=>{
-  const newDice1 = Math.floor(Math.random() * 6) + 1;
-  const newDice2 = Math.floor(Math.random() * 6) + 1;
-  const newSum = newDice1 + newDice2;
+  useEffect(()=>{
+      youWin(playerpos) && setWinlosemssg("Je bent precies op vak 36 gekomen!");
+      youLose(playerpos) && setWinlosemssg("Helaas verloren; vanaf vak 35 kun je nooit meer op 36 komen.. refresh je pagina");
+  }, [playerpos]);
 
-  setDice1(newDice1);
-  setDice2(newDice2);
-  setDiceSum(newSum);
-  movePlayer(newSum);
+  const throwDice = ()=>{
+    const newDice1 = Math.floor(Math.random() * 6) + 1;
+    const newDice2 = Math.floor(Math.random() * 6) + 1;
+    const newSum = newDice1 + newDice2;
+
+    setDice1(newDice1);
+    setDice2(newDice2);
+    setDiceSum(newSum);
+    movePlayer(newSum);
   }
 
 
-  const checkLaddersOrSnakes = (currentPos:number):number=>{
+  const checkLaddersOrSnakes = (rolledDiceSum:number):number=>{
 
     const moveUp: number = ladders
-      .map(arrPair => (Math.min(...arrPair) === currentPos ? Math.max(...arrPair) : 0))
+      .map(arrPair => (Math.min(...arrPair) === rolledDiceSum ? Math.max(...arrPair) : 0))
       .find(n => n !== 0) || 0;
 
     const moveDown: number = snakes
-      .map(arrPair => (Math.max(...arrPair) === currentPos ? Math.min(...arrPair) : 0))
+      .map(arrPair => (Math.max(...arrPair) === rolledDiceSum ? Math.min(...arrPair) : 0))
       .find(n => n !== 0) || 0;
 
-    const newPos = moveUp !== 0 ? moveUp : (moveDown !== 0 ? moveDown : currentPos);
+    const newPos = (moveUp !== 0 ? moveUp : (moveDown !== 0 ? moveDown : rolledDiceSum)) + playerpos;
     return newPos;
   }
 
   const movePlayer = (rolledDiceSum:number)=>{
     const newPos = checkLaddersOrSnakes(rolledDiceSum);
     if(newPos < 37){
-      setPlayerpos((oldPos) => oldPos + newPos);
-      youWin(playerpos) && setWinlosemssg("Je bent precies op vak 36 gekomen!");
-      youLose(playerpos) && setWinlosemssg("Helaas verloren; vanaf vak 35 kun je nooit meer op 36 komen.. refresh je pagina");
+      setPlayerpos(newPos);
     }
   }
 
