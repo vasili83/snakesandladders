@@ -30,18 +30,19 @@ function App() {
 
 
   const checkLaddersOrSnakes = (rolledDiceSum:number):number=>{
+    let prospectPos = rolledDiceSum + playerpos;
 
-    const moveUp: number = ladders
-      .map(arrPair => (Math.min(...arrPair) === rolledDiceSum ? Math.max(...arrPair) : 0))
-      .find(n => n !== 0) || 0;
-    console.log("moveUp", moveUp);
-    const moveDown: number = snakes
-      .map(arrPair => (Math.max(...arrPair) === rolledDiceSum ? Math.min(...arrPair) : 0))
-      .find(n => n !== 0) || 0;
-    console.log("moveDown", moveDown);
+    const moveUp = (): number | undefined => {    
+     let arrPair:[number, number] | undefined = ladders.find((entry) => Math.min(...entry) === prospectPos);
+     return arrPair ? Math.max(...arrPair) : undefined; 
+    }
 
-    const newPos = (moveUp !== 0 ? moveUp : (moveDown !== 0 ? moveDown : rolledDiceSum + playerpos));
-    return newPos;
+    const moveDown = (): number | undefined => {    
+     let arrPair:[number, number] | undefined = snakes.find((entry) => Math.max(...entry) === prospectPos);
+     return arrPair ? Math.min(...arrPair) : undefined; 
+    }
+
+    return moveUp() || moveDown() || prospectPos;
   }
 
   const movePlayer = (rolledDiceSum:number)=>{
